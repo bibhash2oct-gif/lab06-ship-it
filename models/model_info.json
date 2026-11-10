@@ -1,0 +1,120 @@
+{
+  "sklearn_version": "1.9.1",
+  "seed": 7,
+  "threshold": 0.65,
+  "numeric_features": [
+    "distance_km",
+    "items",
+    "hour"
+  ],
+  "categorical_features": [
+    "weather",
+    "day_type"
+  ],
+  "best_params": {
+    "model__C": 1.0,
+    "model__class_weight": "balanced"
+  },
+  "decision_rule": "Flag when predict_proba(X)[:, 1] >= threshold.",
+  "threshold_costs": [
+    {
+      "threshold": 0.05,
+      "cost": 9000
+    },
+    {
+      "threshold": 0.1,
+      "cost": 8916
+    },
+    {
+      "threshold": 0.15,
+      "cost": 8515
+    },
+    {
+      "threshold": 0.2,
+      "cost": 7822
+    },
+    {
+      "threshold": 0.25,
+      "cost": 7034
+    },
+    {
+      "threshold": 0.3,
+      "cost": 6377
+    },
+    {
+      "threshold": 0.35,
+      "cost": 5810
+    },
+    {
+      "threshold": 0.4,
+      "cost": 5342
+    },
+    {
+      "threshold": 0.45,
+      "cost": 4953
+    },
+    {
+      "threshold": 0.5,
+      "cost": 4645
+    },
+    {
+      "threshold": 0.55,
+      "cost": 4432
+    },
+    {
+      "threshold": 0.6,
+      "cost": 4302
+    },
+    {
+      "threshold": 0.65,
+      "cost": 4187
+    },
+    {
+      "threshold": 0.7,
+      "cost": 4277
+    },
+    {
+      "threshold": 0.75,
+      "cost": 4348
+    },
+    {
+      "threshold": 0.8,
+      "cost": 4510
+    },
+    {
+      "threshold": 0.85,
+      "cost": 4665
+    },
+    {
+      "threshold": 0.9,
+      "cost": 4846
+    },
+    {
+      "threshold": 0.95,
+      "cost": 5027
+    }
+  ],
+  "test_results": {
+    "threshold": 0.65,
+    "n_test": 750,
+    "confusion_matrix": [
+      [
+        570,
+        63
+      ],
+      [
+        70,
+        47
+      ]
+    ],
+    "precision": 0.42727272727272725,
+    "recall": 0.4017094017094017,
+    "f1": 0.41409691629955947,
+    "roc_auc": 0.7524675605244326,
+    "costs": {
+      "flag_nobody": 1755,
+      "flag_everybody": 3000,
+      "model": 1490
+    }
+  }
+}

@@ -75,6 +75,12 @@ def test_impossible_number_is_rejected(valid_order, column, bad_value):
         predict.predict_order(valid_order)
 
 
+def test_decimal_hour_is_rejected(valid_order):
+    valid_order["hour"] = 19.5
+    with pytest.raises(ValueError, match="hour"):
+        predict.predict_order(valid_order)
+
+
 @pytest.mark.parametrize(
     "column",
     [

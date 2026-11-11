@@ -17,6 +17,7 @@ try:
 except ImportError:
     pass
 
+
 LABELS = {
     "distance_km": "Distance (km)",
     "items": "Number of items",
@@ -35,35 +36,62 @@ def make_field(name: str):
         return gr.Dropdown(
             choices=predict.CHOICES[name], value=None, label=LABELS[name]
         )
+
     low, high, whole = predict.NUMBER_RULES[name]
     kind = "a whole number" if whole else "a number"
+
     return gr.Number(
-        value=None, label=LABELS[name], info=f"Enter {kind} from {low} to {high}."
+        value=None,
+        label=LABELS[name],
+        info=f"Enter {kind} from {low} to {high}.",
     )
+
+
+def format_probability(chance: float, threshold: float) -> str:
+    """Display probability without rounding across the voucher threshold."""
+    for decimals in range(2, 18):
+        displayed = f"{chance:.{decimals}%}"
+        rounded = float(displayed[:-1]) / 100
+
+        if (chance < threshold) == (rounded < threshold):
+            return displayed
+
+    return f"{chance:.17%}"
 
 
 def check_and_score(*values):
     order = dict(zip(predict.FEATURES, values, strict=True))
+
     try:
         result = predict.predict_order(order)
     except ValueError as error:
         raise gr.Error(f"Please fix this field: {error}") from error
+
     for message in result["warnings"]:
         gr.Warning(message)
 
     chance = result["probability"]
     line = result["threshold"]
-    chances = {"Late": chance, "On time": 1 - chance}
+
+    display_chance = format_probability(chance, line)
+
+    chances = {
+        "Late": chance,
+        "On time": 1 - chance,
+    }
+
     if result["offer_voucher"]:
         action = (
             f"**Offer the $4 voucher now.** The chance this order arrives late is "
-            f"{chance:.0%}, at or above the {line:.0%} line where a voucher pays off."
+            f"{display_chance}, at or above the {line:.0%} line "
+            "where a voucher pays off."
         )
     else:
         action = (
             f"**No voucher needed.** The chance this order arrives late is "
-            f"{chance:.0%}, below the {line:.0%} line where a voucher pays off."
+            f"{display_chance}, below the {line:.0%} line where a voucher pays off."
         )
+
     return chances, action
 
 
@@ -73,11 +101,19 @@ with gr.Blocks(title="QuickBite Late Order Check") as demo:
         "Enter what you know about a new order. The page says how likely it is to "
         "arrive late, and whether to offer the customer a $4 voucher now."
     )
+
     fields = [make_field(name) for name in predict.FEATURES]
+
     button = gr.Button("Check this order", variant="primary")
     chances = gr.Label(label="Chances", num_top_classes=2)
     action = gr.Markdown()
-    button.click(check_and_score, inputs=fields, outputs=[chances, action])
+
+    button.click(
+        check_and_score,
+        inputs=fields,
+        outputs=[chances, action],
+    )
+
 
 if __name__ == "__main__":
     demo.launch()
